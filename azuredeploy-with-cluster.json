@@ -34,6 +34,21 @@
         "description": "The password must be at least 10 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter."
       }
     },
+    "clusterStorageAccountName": {
+    "type": "string",
+    "metadata": {
+        "description": "The name of the storage account to be created and be used as the cluster's storage."
+    }
+    },
+    "clusterStorageType": {
+    "type": "string",
+    "defaultValue": "Standard_LRS",
+    "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_ZRS"
+    ]
+    },
     "location": {
       "type": "string",
       "defaultValue": "East US",
@@ -80,12 +95,11 @@
   "variables": {
     "defaultApiVersion": "2015-05-01-preview",
     "clusterApiVersion": "2015-03-01-preview",
-    "clusterStorageAccountName": "[concat(parameters('clusterName'),'store')]",
     "applicationName": "aqa"
   },
   "resources": [
     {
-      "name": "[variables('clusterStorageAccountName')]",
+      "name": "[parameters('clusterStorageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[parameters('location')]",
       "apiVersion": "[variables('defaultApiVersion')]",
@@ -102,7 +116,7 @@
       "type": "Microsoft.HDInsight/clusters",
       "location": "[parameters('location')]",
       "apiVersion": "[variables('clusterApiVersion')]",
-      "dependsOn": [ "[concat('Microsoft.Storage/storageAccounts/',variables('clusterStorageAccountName'))]" ],
+      "dependsOn": [ "[concat('Microsoft.Storage/storageAccounts/',parameters('clusterStorageAccountName'))]" ],
       "tags": {
 
       },
@@ -122,10 +136,10 @@
         "storageProfile": {
           "storageaccounts": [
             {
-              "name": "[concat(variables('clusterStorageAccountName'),'.blob.core.windows.net')]",
+              "name": "[concat(parameters('clusterStorageAccountName'),'.blob.core.windows.net')]",
               "isDefault": true,
               "container": "[parameters('clusterName')]",
-              "key": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('clusterStorageAccountName')), variables('defaultApiVersion')).key1]"
+              "key": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('clusterStorageAccountName')), variables('defaultApiVersion')).key1]"
             }
           ]
         },
