@@ -17,7 +17,7 @@ wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.win
 
 usage() {
     echo ""
-    echo "Usage: sudo -E bash install-hue-uber-v02.sh";
+    echo "Usage: sudo -E bash aqa-install_v0.sh";
     echo "This script does NOT require Ambari username and password";
     exit 132;
 }
@@ -53,19 +53,9 @@ updateAmbariConfigs() {
         exit 135
     fi
     
-#    echo "Updated hadoop.proxyuser.hue.groups = *"
+#    echo "Updated hadoop.proxyuser.a.groups = *"
     
-    updateResult=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD set $ACTIVEAMBARIHOST $CLUSTERNAME oozie-site "oozie.service.ProxyUserService.proxyuser.hue.hosts" "*")
-    
-    if [[ $updateResult != *"Tag:version"* ]] && [[ $updateResult == *"[ERROR]"* ]]; then
-        echo "[ERROR] Failed to update oozie-site. Exiting!"
-        echo $updateResult
-        exit 135
-    fi
-    
-#    echo "Updated oozie.service.ProxyUserService.proxyuser.hue.hosts = *"
-    
-    updateResult=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD set $ACTIVEAMBARIHOST $CLUSTERNAME oozie-site "oozie.service.ProxyUserService.proxyuser.hue.groups" "*")
+    updateResult=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD set $ACTIVEAMBARIHOST $CLUSTERNAME oozie-site "oozie.service.ProxyUserService.proxyuser.aqa.hosts" "*")
     
     if [[ $updateResult != *"Tag:version"* ]] && [[ $updateResult == *"[ERROR]"* ]]; then
         echo "[ERROR] Failed to update oozie-site. Exiting!"
@@ -73,7 +63,17 @@ updateAmbariConfigs() {
         exit 135
     fi
     
-#    echo "Updated oozie.service.ProxyUserService.proxyuser.hue.hosts = *"
+#    echo "Updated oozie.service.ProxyUserService.proxyuser.aqa.hosts = *"
+    
+    updateResult=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD set $ACTIVEAMBARIHOST $CLUSTERNAME oozie-site "oozie.service.ProxyUserService.proxyuser.aqa.groups" "*")
+    
+    if [[ $updateResult != *"Tag:version"* ]] && [[ $updateResult == *"[ERROR]"* ]]; then
+        echo "[ERROR] Failed to update oozie-site. Exiting!"
+        echo $updateResult
+        exit 135
+    fi
+    
+#    echo "Updated oozie.service.ProxyUserService.proxyuser.aqa.hosts = *"
 }
 
 stopServiceViaRest() {
@@ -83,7 +83,7 @@ stopServiceViaRest() {
     fi
     SERVICENAME=$1
     echo "Stopping $SERVICENAME"
-    curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Stop Service for Hue installation"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME
+    curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Stop Service for AQA installation"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME
 }
 
 startServiceViaRest() {
@@ -94,11 +94,11 @@ startServiceViaRest() {
     sleep 2
     SERVICENAME=$1
     echo "Starting $SERVICENAME"
-    startResult=$(curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Start Service for Hue installation"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)
+    startResult=$(curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Start Service for AQA installation"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)
     if [[ $startResult == *"500 Server Error"* || $startResult == *"internal system exception occurred"* ]]; then
         sleep 60
         echo "Retry starting $SERVICENAME"
-        startResult=$(curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Start Service for Hue installation"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)
+        startResult=$(curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Start Service for AQA installation"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)
     fi
     echo $startResult
 }
@@ -121,8 +121,8 @@ PASSWD=$(echo -e "import hdinsight_common.ClusterManifestParser as ClusterManife
 
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
 
-if [ -e $HUE_INSTALLFOLDER ]; then
-    echo "Hue is already installed. Exiting ..."
+if [ -e $SOLLIANCE_INSTALLFOLDER ]; then
+    echo "AQA is already installed. Exiting ..."
     exit 0
 fi
 
