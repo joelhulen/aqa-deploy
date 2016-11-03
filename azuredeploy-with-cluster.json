@@ -53,12 +53,12 @@
         "Australia Southeast"
       ],
       "metadata": {
-        "description": "The location where all azure resources will be deployed."
+        "description": "The location where all azure resources will be deployed. Make sure you set this to the same location as your Resource Group."
       }
     },
     "clusterType": {
       "type": "string",
-      "defaultValue": "hadoop",
+      "defaultValue": "spark",
       "allowedValues": [
         "hadoop",
         "hbase",
