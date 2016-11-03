@@ -148,4 +148,4 @@ startServiceViaRest OOZIE
 startServiceViaRest HDFS
 
 
-echo "Starting Solliance started"
+echo "Solliance service started"
