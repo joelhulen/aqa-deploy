@@ -33,8 +33,9 @@ aqa_wheel_dir=$aqa_container
 
 # The location for AQA working data.
 AQA_ROOT=/tmp/aqa_root
-mkdir -p $AQA_ROOT/
-
+mkdir $AQA_ROOT
+cd $AQA_ROOT
+sudo touch testfile.sh
  
 
 #import helper module.
