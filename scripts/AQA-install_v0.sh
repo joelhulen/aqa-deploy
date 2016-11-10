@@ -33,7 +33,7 @@ wheel_ext="-py3-none-any.whl"
 
 # The location for AQA working data.
 aqa_root=/mnt/aqa_root
-mkdir -p $aqa_root
+sudo mkdir -p $aqa_root
 
 
 #import helper module.
@@ -45,7 +45,7 @@ echo "*** Setting up the environment for user hadoop (for command line work) ***
 
 # NOTE: PYSPARK_PYTHON is only needed for EMR < 4.6
 
-mkdir -p /home/hadoop
+sudo mkdir -p /home/hadoop
 
 bash_profile=/home/hadoop/.bash_profile
 bashrc=/home/hadoop/.bashrc
@@ -104,11 +104,11 @@ echo "...TOTAL for pip: $seconds elapsed"
 # --------------------------------------------------------------------------------------------------
 echo "*** Installing AQA wheels ***"
 
-mkdir -p $aqa_root/working/wheels
+sudo mkdir -p $aqa_root/working/wheels
 
 
 local_wheel_dir=$aqa_root/working/wheels
-mkdir -p $local_wheel_dir
+sudo mkdir -p $local_wheel_dir
 seconds=0
 for wheel_prefix in "${wheel_prefixes[@]}"
 do
@@ -132,7 +132,7 @@ echo "*** Copying configuration file ***"
 config_file_src=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=b&srt=co&sp=rwdlac&se=2017-11-05T23:37:15Z&st=2016-11-05T15:37:15Z&spr=https&sig=MBUdJ1va7Vl736jikaQhHFtHP47Yy292MEgtZplCbPo%3D/assets/aqa/aqa_cfg.ini
 config_file_dst=$aqa_root/data/aqa_cfg.ini
 
-mkdir -p $config_file_dst
+sudo mkdir -p $config_file_dst
 
 wget $config_file_src $config_file_dst
 
