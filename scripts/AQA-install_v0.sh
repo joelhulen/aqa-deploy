@@ -33,7 +33,7 @@ wheel_ext="-py3-none-any.whl"
 
 # The location for AQA working data.
 aqa_root=/mnt/aqa_root
-sudo mkdir -p $aqa_root
+sudo mkdir -p $aqa_root/
 
 
 #import helper module.
@@ -45,7 +45,7 @@ echo "*** Setting up the environment for user hadoop (for command line work) ***
 
 # NOTE: PYSPARK_PYTHON is only needed for EMR < 4.6
 
-sudo mkdir -p /home/hadoop
+sudo mkdir -p /home/hadoop/
 
 bash_profile=/home/hadoop/.bash_profile
 bashrc=/home/hadoop/.bashrc
@@ -104,11 +104,11 @@ echo "...TOTAL for pip: $seconds elapsed"
 # --------------------------------------------------------------------------------------------------
 echo "*** Installing AQA wheels ***"
 
-sudo mkdir -p $aqa_root/working/wheels
+sudo mkdir -p $aqa_root/working/wheels/
 
 
 local_wheel_dir=$aqa_root/working/wheels
-sudo mkdir -p $local_wheel_dir
+sudo mkdir -p $local_wheel_dir/
 seconds=0
 for wheel_prefix in "${wheel_prefixes[@]}"
 do
