@@ -23,7 +23,7 @@
 release=mvp1.1 # Change this for each MVP release.
 
 # This is then the location on S3 where the release files are published.
-aqa_container=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=b&srt=co&sp=rwdlac&se=2017-11-05T23:37:15Z&st=2016-11-05T15:37:15Z&spr=https&sig=MBUdJ1va7Vl736jikaQhHFtHP47Yy292MEgtZplCbPo%3D/assets/aqa
+aqa_container=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=bfqt&srt=sco&sp=rwdlacup&se=2017-11-10T12:30:58Z&st=2016-11-10T04:30:58Z&spr=https&sig=KcXzYyJeY0Q5ri3hTcvN4W%2FKQDnffGdyZxuHxpWRYr0%3D/assets/aqa
 aqa_wheel_dir=$aqa_container
 
 # This is the list of wheel filenames. Each filename is composed of a package name and version
