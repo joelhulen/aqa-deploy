@@ -54,7 +54,7 @@
             },
             "installScriptActions": [{
                 "name": "[concat('aqa-install-v0','-' ,uniquestring(variables('applicationName')))]",
-                "uri": "https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/scripts/hue.sh",
+                "uri": "https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/scripts/hue_install.sh",
                 "roles": ["edgenode"]
             }],
             "uninstallScriptActions": [],
