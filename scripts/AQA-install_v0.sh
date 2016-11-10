@@ -1,151 +1,141 @@
-#! /bin/bash
-CORESITEPATH=/etc/hadoop/conf/core-site.xml
-YARNSITEPATH=/etc/hadoop/conf/yarn-site.xml
-AMBARICONFIGS_SH=/var/lib/ambari-server/resources/scripts/configs.sh
-PORT=8080
+#!/bin/bash
+# --------------------------------------------------------------------------------------------------
+# An executable script for bootstrapping EMR clusters:
+#
+# - Set up the 'hadoop' user environment for command line work.
+# - Install requisites:
+#   - Python 3.4.
+#   - A development environment (required for installing certain Python packages).
+#   - Problem packages that want to be installed separately (numpy, scipy).
+# - Install AQA wheels.
+# - Copy a standard AQA configuration file.
+# 
+# This script requires no command line argument.
 
+# --------------------------------------------------------------------------------------------------
+# Script configuration:
 
-SOLLIANCE_TARFILE=solliance.jar
+# Exit immediately if a command exits with a non-zero status.
+set -e
 
+# Set the directory path to the release location in S3. $release must be set to what follows
+# 's3://aqapop/beta/' in the full directory path (for example 'mvp1.1').
+release=mvp1.1 # Change this for each MVP release.
 
-SOLLIANCE_TARFILEURI=https://github.com/joelhulen/aqa-deploy/tree/master/libs/$SOLLIANCE_TARFILE
-SOLLIANCE_INSTALLFOLDER=/usr/share/solliance
-ACTIVEAMBARIHOST=headnodehost
+# This is then the location on S3 where the release files are published.
+aqa_container=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=b&srt=co&sp=rwdlac&se=2017-11-05T23:37:15Z&st=2016-11-05T15:37:15Z&spr=https&sig=MBUdJ1va7Vl736jikaQhHFtHP47Yy292MEgtZplCbPo%3D/assets/aqa
+aqa_wheel_dir=$aqa_container
+
+# This is the list of wheel filenames. Each filename is composed of a package name and version
+# number in wheel_prefixes and the common suffix in wheel_ext.
+declare -a wheel_prefixes=("algebraixlib-1.4b1" "aqashared-0.1.1" "aqaspark-0.1.1" "aqacfs-0.1.1" "aqaopt-0.1.1" "internal-1.1.1" "experimental-1.1.1")
+wheel_ext="-py3-none-any.whl"
+
+# The location for AQA working data.
+aqa_root=/mnt/aqa_root
+mkdir -p $aqa_root
+
 
 #import helper module.
 wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.windows.net/linuxconfigactionmodulev01/HDInsightUtilities-v01.sh && source /tmp/HDInsightUtilities-v01.sh && rm -f /tmp/HDInsightUtilities-v01.sh
 
-usage() {
-    echo ""
-    echo "Usage: sudo -E bash aqa-install_v0.sh";
-    echo "This script does NOT require Ambari username and password";
-    exit 132;
-}
 
-checkHostNameAndSetClusterName() {
-    fullHostName=$(hostname -f)
-    echo "fullHostName=$fullHostName"
-    CLUSTERNAME=$(sed -n -e 's/.*\.\(.*\)-ssh.*/\1/p' <<< $fullHostName)
-    if [ -z "$CLUSTERNAME" ]; then
-        CLUSTERNAME=$(echo -e "import hdinsight_common.ClusterManifestParser as ClusterManifestParser\nprint ClusterManifestParser.parse_local_manifest().deployment.cluster_name" | python)
-        if [ $? -ne 0 ]; then
-            echo "[ERROR] Cannot determine cluster name. Exiting!"
-            exit 133
-        fi
+# --------------------------------------------------------------------------------------------------
+echo "*** Setting up the environment for user hadoop (for command line work) ***"
+
+# NOTE: PYSPARK_PYTHON is only needed for EMR < 4.6
+
+mkdir -p /home/hadoop
+
+bash_profile=/home/hadoop/.bash_profile
+bashrc=/home/hadoop/.bashrc
+environ="
+export PYSPARK_PYTHON=/usr/bin/python3.4
+export PYTHONPATH=/usr/lib/spark/python
+export PYTHONHASHSEED=0
+export ADC_CUSTOMER_RUNNING_ON_EMR_CLUSTER=1
+"
+echo "${environ}" >> ${bash_profile}
+echo "${environ}" >> ${bashrc}
+
+# --------------------------------------------------------------------------------------------------
+echo "*** Installing Python3.4 and a development environment ***"
+
+seconds=0
+
+sudo apt-get -y update
+echo "   ...apt-get update: $seconds elapsed"
+#python3 is already installed on ubuntu
+
+#sudo apt-get -y install python34*
+#echo "   ...apt-get python34: $seconds elapsed"
+sudo apt-get -y install mlocate
+echo "   ...apt-get mlocate: $seconds elapsed"
+sudo apt-get -y install dos2unix
+echo "   ...apt-get dos2unix: $seconds elapsed"
+sudo apt-get -y install libblas-dev liblapack-dev
+echo "   ...apt-get libblas-dev,liblapack-dev : $seconds elapsed"
+sudo apt-get -y install libssl-dev
+echo "   ...apt-get openssl-devel: $seconds elapsed"
+# TODO Maybe install only the necessary subset of Development Tools (to speed up the process).
+sudo apt-get -y install build-essential
+echo "   ...apt-get Development Tools: $seconds elapsed"
+
+sudo apt-get -y install python3-pip
+echo "   ...apt-get python3-pip: $seconds elapsed"
+
+echo "...TOTAL for apt-get: $seconds elapsed"
+
+# --------------------------------------------------------------------------------------------------
+echo "*** Installing problematic Python modules ***"
+
+# numpy and scipy are necessary for scikit-learn and it has trouble installing without them.
+# TODO The experimental and internal packages rely on this. This section can be removed when those
+# packages are removed assuming there will be no dependencies on numpy and scipy otherwise.
+seconds=0
+declare -a packages=("numpy" "scipy")
+for package in "${packages[@]}"
+do
+    sudo pip3 install $package
+    echo "   ...pip $package: $seconds elapsed"
+done
+echo "...TOTAL for pip: $seconds elapsed"
+
+# --------------------------------------------------------------------------------------------------
+echo "*** Installing AQA wheels ***"
+
+mkdir -p $aqa_root/working/wheels
+
+
+local_wheel_dir=$aqa_root/working/wheels
+mkdir -p $local_wheel_dir
+seconds=0
+for wheel_prefix in "${wheel_prefixes[@]}"
+do
+    wheel_filename=$wheel_prefix$wheel_ext
+    s3_wheel_filename=$s3_wheel_dir/$wheel_filename
+    local_wheel_filename=$local_wheel_dir/$wheel_filename
+    if [[ -n "$s3_wheel_filename" ]]; then
+        echo "Copying wheel $s3_wheel_filename to $local_wheel_filename"
+        wget $s3_wheel_filename -P $local_wheel_filename
+        echo "   ...wheel aws cp: $seconds elapsed"
+        echo "Installing wheel $local_wheel_filename"
+        sudo python34 -m pip install $local_wheel_filename
+        echo "   ...wheel install: $seconds elapsed"
     fi
-    echo "Cluster Name=$CLUSTERNAME"
-}
+done
+echo "...TOTAL for wheel: $seconds elapsed"
 
-validateUsernameAndPassword() {
-    coreSiteContent=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD get $ACTIVEAMBARIHOST $CLUSTERNAME core-site)
-    if [[ $coreSiteContent == *"[ERROR]"* && $coreSiteContent == *"Bad credentials"* ]]; then
-        echo "[ERROR] Username and password are invalid. Exiting!"
-        exit 134
-    fi
-}
+# --------------------------------------------------------------------------------------------------
+echo "*** Copying configuration file ***"
 
-updateAmbariConfigs() {
-    updateResult=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD set $ACTIVEAMBARIHOST $CLUSTERNAME core-site "hadoop.proxyuser.oozie.groups" "*")
-    
-    if [[ $updateResult != *"Tag:version"* ]] && [[ $updateResult == *"[ERROR]"* ]]; then
-        echo "[ERROR] Failed to update core-site. Exiting!"
-        echo $updateResult
-        exit 135
-    fi
-    
-#    echo "Updated hadoop.proxyuser.a.groups = *"
-    
-    updateResult=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD set $ACTIVEAMBARIHOST $CLUSTERNAME oozie-site "oozie.service.ProxyUserService.proxyuser.aqa.hosts" "*")
-    
-    if [[ $updateResult != *"Tag:version"* ]] && [[ $updateResult == *"[ERROR]"* ]]; then
-        echo "[ERROR] Failed to update oozie-site. Exiting!"
-        echo $updateResult
-        exit 135
-    fi
-    
-#    echo "Updated oozie.service.ProxyUserService.proxyuser.aqa.hosts = *"
-    
-    updateResult=$(bash $AMBARICONFIGS_SH -u $USERID -p $PASSWD set $ACTIVEAMBARIHOST $CLUSTERNAME oozie-site "oozie.service.ProxyUserService.proxyuser.aqa.groups" "*")
-    
-    if [[ $updateResult != *"Tag:version"* ]] && [[ $updateResult == *"[ERROR]"* ]]; then
-        echo "[ERROR] Failed to update oozie-site. Exiting!"
-        echo $updateResult
-        exit 135
-    fi
-    
-#    echo "Updated oozie.service.ProxyUserService.proxyuser.aqa.hosts = *"
-}
+config_file_src=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=b&srt=co&sp=rwdlac&se=2017-11-05T23:37:15Z&st=2016-11-05T15:37:15Z&spr=https&sig=MBUdJ1va7Vl736jikaQhHFtHP47Yy292MEgtZplCbPo%3D/assets/aqa/aqa_cfg.ini
+config_file_dst=$aqa_root/data/aqa_cfg.ini
 
-stopServiceViaRest() {
-    if [ -z "$1" ]; then
-        echo "Need service name to stop service"
-        exit 136
-    fi
-    SERVICENAME=$1
-    echo "Stopping $SERVICENAME"
-    curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Stop Service for AQA installation"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME
-}
+mkdir -p $config_file_dst
 
-startServiceViaRest() {
-    if [ -z "$1" ]; then
-        echo "Need service name to start service"
-        exit 136
-    fi
-    sleep 2
-    SERVICENAME=$1
-    echo "Starting $SERVICENAME"
-    startResult=$(curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Start Service for AQA installation"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)
-    if [[ $startResult == *"500 Server Error"* || $startResult == *"internal system exception occurred"* ]]; then
-        sleep 60
-        echo "Retry starting $SERVICENAME"
-        startResult=$(curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Start Service for AQA installation"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)
-    fi
-    echo $startResult
-}
+wget $config_file_src $config_file_dst
 
 
-
-
-
-##############################
-if [ "$(id -u)" != "0" ]; then
-    echo "[ERROR] The script has to be run as root."
-    usage
-fi
-
-USERID=$(echo -e "import hdinsight_common.Constants as Constants\nprint Constants.AMBARI_WATCHDOG_USERNAME" | python)
-
-echo "USERID=$USERID"
-
-PASSWD=$(echo -e "import hdinsight_common.ClusterManifestParser as ClusterManifestParser\nimport hdinsight_common.Constants as Constants\nimport base64\nbase64pwd = ClusterManifestParser.parse_local_manifest().ambari_users.usersmap[Constants.AMBARI_WATCHDOG_USERNAME].password\nprint base64.b64decode(base64pwd)" | python)
-
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-
-if [ -e $SOLLIANCE_INSTALLFOLDER ]; then
-    echo "AQA is already installed. Exiting ..."
-    exit 0
-fi
-
-if [[ $OS_VERSION == 14* ]]; then
-    export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-elif [[ $OS_VERSION == 16* ]]; then
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-fi
-
-checkHostNameAndSetClusterName
-validateUsernameAndPassword
-updateAmbariConfigs
-stopServiceViaRest HDFS
-stopServiceViaRest YARN
-stopServiceViaRest MAPREDUCE2
-stopServiceViaRest OOZIE
-
-echo "Starting Solliance service"
-
-startServiceViaRest YARN
-startServiceViaRest MAPREDUCE2
-startServiceViaRest OOZIE
-startServiceViaRest HDFS
-
-
-echo "Solliance service started"
+# --------------------------------------------------------------------------------------------------
+echo "*** AQA Bootstrap Complete ***"
