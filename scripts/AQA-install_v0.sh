@@ -32,7 +32,7 @@ aqa_wheel_dir=$aqa_container
 #wheel_ext="-py3-none-any.whl"
 
 # The location for AQA working data.
-AQA_ROOT=/mnt/aqa_root
+AQA_ROOT=/tmp/aqa_root
 mkdir -p $AQA_ROOT/
 
  
