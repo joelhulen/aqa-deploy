@@ -32,11 +32,11 @@ aqa_wheel_dir=$aqa_container
 #wheel_ext="-py3-none-any.whl"
 
 # The location for AQA working data.
-aqa_root=/mnt/aqa_root
-sudo mkdir -p $aqa_root/
+AQA_ROOT=/mnt/aqa_root
+sudo mkdir -p $AQA_ROOT/
 
 echo "created $aqa_root"
-cd $aqa_root
+cd $AQA_ROOT
 ls 
 
 #import helper module.
