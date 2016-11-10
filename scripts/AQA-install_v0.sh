@@ -33,11 +33,9 @@ aqa_wheel_dir=$aqa_container
 
 # The location for AQA working data.
 AQA_ROOT=/mnt/aqa_root
-sudo mkdir -p $AQA_ROOT/
+mkdir -p $AQA_ROOT/
 
-echo "created $aqa_root"
-cd $AQA_ROOT
-ls 
+ 
 
 #import helper module.
 #wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.windows.net/linuxconfigactionmodulev01/HDInsightUtilities-v01.sh && source /tmp/HDInsightUtilities-v01.sh && rm -f /tmp/HDInsightUtilities-v01.sh
