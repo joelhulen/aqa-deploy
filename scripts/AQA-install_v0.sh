@@ -113,14 +113,14 @@ seconds=0
 for wheel_prefix in "${wheel_prefixes[@]}"
 do
     wheel_filename=$wheel_prefix$wheel_ext
-    s3_wheel_filename=$s3_wheel_dir/$wheel_filename
+    aqa_wheel_filename=$aqa_wheel_dir/$wheel_filename
     local_wheel_filename=$local_wheel_dir/$wheel_filename
-    if [[ -n "$s3_wheel_filename" ]]; then
-        echo "Copying wheel $s3_wheel_filename to $local_wheel_filename"
-        wget $s3_wheel_filename -P $local_wheel_filename
+    if [[ -n "$aqa_wheel_filename" ]]; then
+        echo "Copying wheel $aqa_wheel_filename to $local_wheel_filename"
+        wget $aqa_wheel_filename -P $local_wheel_filename
         echo "   ...wheel aws cp: $seconds elapsed"
         echo "Installing wheel $local_wheel_filename"
-        sudo python34 -m pip install $local_wheel_filename
+        sudo python3 -m pip3 install $local_wheel_filename
         echo "   ...wheel install: $seconds elapsed"
     fi
 done
