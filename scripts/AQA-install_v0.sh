@@ -22,6 +22,11 @@ set -e
 # 's3://aqapop/beta/' in the full directory path (for example 'mvp1.1').
 release=mvp1.1 # Change this for each MVP release.
 
+
+#import helper module.
+wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.windows.net/linuxconfigactionmodulev01/HDInsightUtilities-v01.sh && source /tmp/HDInsightUtilities-v01.sh && rm -f /tmp/HDInsightUtilities-v01.sh
+
+
 # This is then the location on S3 where the release files are published.
 s3_wheel_dir=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=bfqt&srt=sco&sp=rwdlacup&se=2017-11-10T12:30:58Z&st=2016-11-10T04:30:58Z&spr=https&sig=KcXzYyJeY0Q5ri3hTcvN4W%2FKQDnffGdyZxuHxpWRYr0%3D/assets/aqa
 
