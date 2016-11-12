@@ -36,6 +36,8 @@ wheel_ext="-py3-none-any.whl"
 
 # The location for AQA working data.
 aqa_root=/mnt/aqa_root
+sudo mkdir -p /mnt/aqa_root/
+sudo mkdir -p /mnt/aqa_root/data/
 
 # --------------------------------------------------------------------------------------------------
 echo "*** Setting up the environment for user hadoop (for command line work) ***"
