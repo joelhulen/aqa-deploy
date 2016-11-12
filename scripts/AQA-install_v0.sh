@@ -41,15 +41,15 @@ aqa_root=/mnt/aqa_root
 echo "*** Setting up the environment for user hadoop (for command line work) ***"
 
 # NOTE: PYSPARK_PYTHON is only needed for EMR < 4.6
-bash_profile=/home/ubuntu/.bash_profile
-bashrc=/home/ubuntu/.bashrc
+bash_profile=/home/sshuser/.bash_profile
+bashrc=/home/sshuser/.bashrc
 environ="
 export PYSPARK_PYTHON=/usr/bin/python3
 export PYSPARK_DRIVER_PYTHON=python3
-export PYTHONPATH=/usr/lib/spark/python
+export PYTHONPATH=/usr/hdp/2.4.4.0-10/spark/python
 export PYTHONHASHSEED=0
 export ADC_CUSTOMER_RUNNING_ON_EMR_CLUSTER=1
-export SPARK_HOME=/usr/lib/spark/
+export SPARK_HOME=/usr/hdp/2.4.4.0-10/spark
 export PATH=$SPARK_HOME/bin:$PATH
 "
 
