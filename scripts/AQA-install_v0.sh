@@ -16,18 +16,18 @@
 # Script configuration:
 
 # Exit immediately if a command exits with a non-zero status.
-#set -e
+set -e
 
 # Set the directory path to the release location in S3. $release must be set to what follows
 # 's3://aqapop/beta/' in the full directory path (for example 'mvp1.1').
 release=mvp1.1 # Change this for each MVP release.
 
-
-#import helper module.
-wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.windows.net/linuxconfigactionmodulev01/HDInsightUtilities-v01.sh && source /tmp/HDInsightUtilities-v01.sh && rm -f /tmp/HDInsightUtilities-v01.sh
-
 # This is then the location on S3 where the release files are published.
-s3_wheel_dir=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=bfqt&srt=sco&sp=rwdlacup&se=2017-11-10T12:30:58Z&st=2016-11-10T04:30:58Z&spr=https&sig=KcXzYyJeY0Q5ri3hTcvN4W%2FKQDnffGdyZxuHxpWRYr0%3D/assets/aqa
+
+base_url=https://aqa.blob.core.windows.net/assets/aqa
+url_ext="?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D"
+
+
 
 # This is the list of wheel filenames. Each filename is composed of a package name and version
 # number in wheel_prefixes and the common suffix in wheel_ext.
@@ -63,8 +63,8 @@ seconds=0
 sudo apt-get -y update
 echo "   ...apt-get update: $seconds elapsed"
 #sudo apt -y install python34*
-sudo apt-get install python3-setuptools
-sudo easy_install3 pip
+sudo apt-get i-y nstall python3-setuptools
+sudo apt-get -y install python3-pip
 echo "   ...apt-get python34: $seconds elapsed"
 sudo apt-get -y install mlocate
 echo "   ...apt-get mlocate: $seconds elapsed"
@@ -114,7 +114,7 @@ seconds=0
 for wheel_prefix in "${wheel_prefixes[@]}"
 do
     wheel_filename=$wheel_prefix$wheel_ext
-    s3_wheel_filename=$s3_wheel_dir/$wheel_filename
+    s3_wheel_filename=$base_url/$wheel_filename$url_ext
     local_wheel_filename=$local_wheel_dir/$wheel_filename
     if [[ -n "$s3_wheel_filename" ]]; then
         echo "Copying wheel $s3_wheel_filename to $local_wheel_filename"
@@ -130,11 +130,12 @@ echo "...TOTAL for wheel: $seconds elapsed"
 # --------------------------------------------------------------------------------------------------
 echo "*** Copying configuration file ***"
 
-config_file_src=https://aqa.blob.core.windows.net/?sv=2015-04-05&ss=bfqt&srt=sco&sp=rwdlacup&se=2017-11-10T12:30:58Z&st=2016-11-10T04:30:58Z&spr=https&sig=KcXzYyJeY0Q5ri3hTcvN4W%2FKQDnffGdyZxuHxpWRYr0%3D/assets/aqa/aqa_cfg.ini
+config_file_src=aqa_cfg.ini
+
 
 
 sudo mkdir -p /mnt/aqa_root/data/
-sudo  wget $config_file_src -P /mnt/aqa_root/data/
+sudo  wget $base_url/$config_file_src$url_ext
 
 . /home/ubuntu/.bashrc
 . /home/ubuntu/.bash_profile
