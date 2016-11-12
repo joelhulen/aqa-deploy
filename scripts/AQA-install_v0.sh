@@ -60,10 +60,11 @@ echo "${environ}" >> ${bashrc}
 echo "*** Installing Python3.4 and a development environment ***"
 
 seconds=0
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv B9733A7A07513CAD
 sudo apt-get -y update
 echo "   ...apt-get update: $seconds elapsed"
 #sudo apt -y install python34*
-sudo apt-get i-y nstall python3-setuptools
+sudo apt-get -y install python3-setuptools
 sudo apt-get -y install python3-pip
 echo "   ...apt-get python34: $seconds elapsed"
 sudo apt-get -y install mlocate
@@ -137,7 +138,7 @@ config_file_src=aqa_cfg.ini
 sudo mkdir -p /mnt/aqa_root/data/
 sudo  wget $base_url/$config_file_src$url_ext
 
-. /home/ubuntu/.bashrc
-. /home/ubuntu/.bash_profile
+. /home/sshuser/.bashrc
+. /home/sshuser/.bash_profile
 # --------------------------------------------------------------------------------------------------
 echo "*** AQA Bootstrap Complete ***"
