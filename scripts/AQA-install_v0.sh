@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 # --------------------------------------------------------------------------------------------------
 # An executable script for bootstrapping EMR clusters:
 #
@@ -34,8 +34,13 @@ url_ext="?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-
 declare -a wheel_prefixes=("algebraixlib-1.4b1" "aqashared-0.1.1" "aqaspark-0.1.1" "aqacfs-0.1.1" "aqaopt-0.1.1" "internal-1.1.1" "experimental-1.1.1")
 wheel_ext="-py3-none-any.whl"
 
+
+
 # The location for AQA working data.
 aqa_root=/mnt/aqa_root
+
+sudo rm -rf $aqa_root
+
 sudo mkdir -p /mnt/aqa_root/
 sudo mkdir -p /mnt/aqa_root/data/
 
@@ -121,12 +126,14 @@ do
     local_wheel_filename=$local_wheel_dir/$wheel_filename
     if [[ -n "$s3_wheel_filename" ]]; then
         echo "Copying wheel $s3_wheel_filename to $local_wheel_filename"
-        sudo wget $s3_wheel_filename -P $local_wheel_filename
+        sudo wget $s3_wheel_filename -P $local_wheel_filename 
         echo "   ...wheel azure cp: $seconds elapsed"
         echo "Installing wheel $local_wheel_filename"
-       # sudo python3 -m pip install $local_wheel_filename
-       
-        sudo python3 -m pip install $local_wheel_filename
+        
+        sudo mv $local_wheel_filename/"$wheel_filename$url_ext" $local_wheel_filename/$wheel_filename
+        sudo python3 -m pip install $local_wheel_filename/$wheel_filename
+        
+        #sudo python3 -m pip install $local_wheel_filename
         echo "   ...wheel install: $seconds elapsed"
     fi
 done
