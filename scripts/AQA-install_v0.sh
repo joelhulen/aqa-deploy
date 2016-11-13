@@ -124,6 +124,8 @@ do
         sudo wget $s3_wheel_filename -P $local_wheel_filename
         echo "   ...wheel azure cp: $seconds elapsed"
         echo "Installing wheel $local_wheel_filename"
+       # sudo python3 -m pip install $local_wheel_filename
+       
         sudo python3 -m pip install $local_wheel_filename
         echo "   ...wheel install: $seconds elapsed"
     fi
