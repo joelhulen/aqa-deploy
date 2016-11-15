@@ -13,4 +13,4 @@
 
 ### Steps after deployment:
    
-     Once we have cluster deployed and AQA scripts run. We should copy the parquet files to blob storage account used by the cluster under data folder.
+     Once we have cluster deployed and AQA scripts run, we should copy the parquet files to blob storage account used by the cluster under data folder.
