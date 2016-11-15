@@ -149,8 +149,12 @@ config_file_src=aqa_cfg.ini
 rm -rf /mnt/aqa_root/data/
 
 sudo mkdir -p /mnt/aqa_root/data/
+
+cd /mnt/aqa_root/data/
+
 sudo  wget $base_url/$config_file_src$url_ext
 
+sudo mv $base_url/"$config_file_src$url_ext" $base_url/$config_file_src
 
 sudo chmod -R 777 /mnt/aqa_root/data/
 
