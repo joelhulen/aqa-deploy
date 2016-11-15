@@ -53,10 +53,10 @@ bashrc=/home/sshuser/.bashrc
 environ="
 export PYSPARK_PYTHON=/usr/bin/python3
 export PYSPARK_DRIVER_PYTHON=python3
-export PYTHONPATH=/usr/hdp/2.4.4.0-10/spark/python
+export PYTHONPATH=/usr/hdp/current/spark-client/python
 export PYTHONHASHSEED=0
 export ADC_CUSTOMER_RUNNING_ON_EMR_CLUSTER=1
-export SPARK_HOME=/usr/hdp/2.4.4.0-10/spark
+export SPARK_HOME=/usr/hdp/current/spark-client
 export PATH=$SPARK_HOME/bin:$PATH
 "
 
@@ -73,6 +73,7 @@ echo "   ...apt-get update: $seconds elapsed"
 #sudo apt -y install python34*
 sudo apt-get -y install python3-setuptools
 sudo apt-get -y install python3-pip
+
 echo "   ...apt-get python34: $seconds elapsed"
 sudo apt-get -y install mlocate
 echo "   ...apt-get mlocate: $seconds elapsed"
@@ -107,7 +108,7 @@ seconds=0
 declare -a packages=("numpy" "scipy")
 for package in "${packages[@]}"
 do
-    sudo pip3 install $package
+    sudo python3-pip install $package
     echo "   ...pip $package: $seconds elapsed"
 done
 echo "...TOTAL for pip: $seconds elapsed"
@@ -131,9 +132,10 @@ do
         echo "Installing wheel $local_wheel_filename"
         
         sudo mv $local_wheel_filename/"$wheel_filename$url_ext" $local_wheel_filename/$wheel_filename
-        sudo python3 -m pip install $local_wheel_filename/$wheel_filename
         
-        #sudo python3 -m pip install $local_wheel_filename
+        sudo python3-pip install $local_wheel_filename/$wheel_filename
+        
+        sudo python3 -m pip install $local_wheel_filename
         echo "   ...wheel install: $seconds elapsed"
     fi
 done
@@ -144,12 +146,13 @@ echo "*** Copying configuration file ***"
 
 config_file_src=aqa_cfg.ini
 
-
+rm -rf /mnt/aqa_root/data/
 
 sudo mkdir -p /mnt/aqa_root/data/
 sudo  wget $base_url/$config_file_src$url_ext
 
-. /home/sshuser/.bashrc
-. /home/sshuser/.bash_profile
+
+sudo chmod -R 777 /mnt/aqa_root/data/
+
 # --------------------------------------------------------------------------------------------------
 echo "*** AQA Bootstrap Complete ***"
