@@ -86,10 +86,49 @@
     },
     "clusterWorkerNodeCount": {
       "type": "int",
-      "defaultValue": 2,
+      "defaultValue": 4,
       "metadata": {
         "description": "The number of nodes in the HDInsight cluster."
       }
+    },
+    "clusterWorkerNodeSize": {
+      "type": "string",
+      "metadata": {
+          "description": "The HDInsight cluster Worker Node size"
+      },
+      "defaultValue": "Standard_D4_v2",
+      "allowedValues": [
+          "Standard_D4_v2",
+          "Standard_D12_v2",
+          "Standard_D13_v2",
+          "Standard_D14_v2"
+      ]
+    },
+    "clusterHeadNodeSize": {
+      "type": "string",
+      "metadata": {
+          "description": "The HDInsight cluster Head Node size"
+      },
+      "defaultValue": "Standard_D12_v2",
+      "allowedValues": [
+          "Standard_D12_v2",
+          "Standard_D13_v2",
+          "Standard_D14_v2"
+      ]
+    },
+    "edgeNodeSize": {
+      "type": "string",
+      "metadata": {
+          "description": "Size of the edge node that hosts the AQA application"
+      },
+      "defaultValue": "Standard_D12_v2",
+      "allowedValues": [
+          "Standard_D3_v2",
+          "Standard_D4_v2",
+          "Standard_D12_v2",
+          "Standard_D13_v2",
+          "Standard_D14_v2"
+      ]
     }
   },
   "variables": {
@@ -149,7 +188,7 @@
               "name": "headnode",
               "targetInstanceCount": "2",
               "hardwareProfile": {
-                "vmSize": "Standard_D3"
+                "vmSize": "[parameters('clusterHeadNodeSize')]"
               },
               "osProfile": {
                 "linuxOperatingSystemProfile": {
@@ -162,7 +201,7 @@
               "name": "workernode",
               "targetInstanceCount": "[parameters('clusterWorkerNodeCount')]",
               "hardwareProfile": {
-                "vmSize": "Standard_D3"
+                "vmSize": "[parameters('clusterWorkerNodeSize')]"
               },
               "osProfile": {
                 "linuxOperatingSystemProfile": {
@@ -175,7 +214,6 @@
         }
       }
     },
-
     {
       "name": "[concat(parameters('clusterName'),'/', variables('applicationName'))]",
       "type": "Microsoft.HDInsight/clusters/applications",
@@ -188,7 +226,7 @@
               "name": "edgenode",
               "targetInstanceCount": 1,
               "hardwareProfile": {
-                "vmSize": "Standard_D3"
+                "vmSize": "[parameters('edgeNodeSize')]"
               }
             }
           ]
@@ -216,9 +254,6 @@
         "applicationType": "CustomApplication"
       }
     }
-
-
-
   ],
   "outputs": {
     "cluster": {
