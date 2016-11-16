@@ -149,17 +149,7 @@
               "name": "headnode",
               "targetInstanceCount": "2",
               "hardwareProfile": {
-                "vmSize": {
-                    "type": "string",
-                    "metadata": {
-                        "description": "Virtual Machine Size"
-                    },
-                    "defaultValue": "Standard_D3",
-                    "allowedValues": [
-                        "Standard_D3",
-                        "Standard_DS14"
-                    ]
-                }
+                "vmSize": "Standard_D3"
               },
               "osProfile": {
                 "linuxOperatingSystemProfile": {
@@ -172,17 +162,7 @@
               "name": "workernode",
               "targetInstanceCount": "[parameters('clusterWorkerNodeCount')]",
               "hardwareProfile": {
-                "vmSize": {
-                    "type": "string",
-                    "metadata": {
-                        "description": "Virtual Machine Size"
-                    },
-                    "defaultValue": "Standard_D3",
-                    "allowedValues": [
-                        "Standard_D3",
-                        "Standard_DS14"
-                    ]
-                }
+                "vmSize": "Standard_D3"
               },
               "osProfile": {
                 "linuxOperatingSystemProfile": {
@@ -208,17 +188,7 @@
               "name": "edgenode",
               "targetInstanceCount": 1,
               "hardwareProfile": {
-                "vmSize": {
-                    "type": "string",
-                    "metadata": {
-                        "description": "Virtual Machine Size"
-                    },
-                    "defaultValue": "Standard_D3",
-                    "allowedValues": [
-                        "Standard_D3",
-                        "Standard_DS14"
-                    ]
-                }
+                "vmSize": "Standard_D3"
               }
             }
           ]
