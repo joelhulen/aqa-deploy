@@ -152,7 +152,9 @@ cd /mnt/aqa_root/data/
 
 sudo  wget $base_url/$config_file_src$url_ext
 
-sudo mv $base_url/"$config_file_src$url_ext" $base_url/$config_file_src
+
+
+sudo mv /mnt/aqa_root/data/"$config_file_src$url_ext" /mnt/aqa_root/data/$config_file_src
 
 sudo chmod -R 777 /mnt/aqa_root/data/
 
