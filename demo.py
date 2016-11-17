@@ -5,12 +5,15 @@ sqlContext = aqaspark.SQLContext(sc)
 from datetime import datetime, time
 
 #rdd = sc.textFile("wasbs://public@aqa.blob.core.windows.net/data/test.txt")
-df_customer = sqlContext.read.parquet("/data/data/customer.parquet")
-df_orders = sqlContext.read.parquet("/data/data/orders.parquet")
-df_lineitem = sqlContext.read.parquet("/data/data/lineitem.parquet")
-df_supplier = sqlContext.read.parquet("/data/data/supplier.parquet")
-df_nation = sqlContext.read.parquet("/data/data/nation.parquet")
-df_region = sqlContext.read.parquet("/data/data/region.parquet")
+
+df_customer = sqlContext.read.parquet("wasbs://public@aqa.blob.core.windows.net/data/customer.parquet")
+df_orders = sqlContext.read.parquet("wasbs://public@aqa.blob.core.windows.net/data/orders.parquet")
+df_lineitem = sqlContext.read.parquet("wasbs://public@aqa.blob.core.windows.net/data/lineitem.parquet")
+df_supplier = sqlContext.read.parquet("wasbs://public@aqa.blob.core.windows.net/data/supplier.parquet")
+df_nation = sqlContext.read.parquet("wasbs://public@aqa.blob.core.windows.net/data/nation.parquet")
+df_region = sqlContext.read.parquet("wasbs://public@aqa.blob.core.windows.net/data/region.parquet")
+
+
 
 
 # create table from datafrom
