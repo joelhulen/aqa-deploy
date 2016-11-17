@@ -168,8 +168,8 @@ sudo mv /mnt/aqa_root/data/"$config_file_src$url_ext" /mnt/aqa_root/data/$config
 
 sudo chmod -R 777 /mnt/aqa_root/data/
 
-. ~/.bashrc
-. ~/.bash_profile
+source /home/sshuser/.bash
+source /home/sshuser/.bash_profile
 
 # --------------------------------------------------------------------------------------------------
 
