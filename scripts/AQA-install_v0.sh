@@ -173,3 +173,11 @@ sudo chmod -R 777 /mnt/aqa_root/data/
 
 # --------------------------------------------------------------------------------------------------
 echo "*** AQA Bootstrap Complete ***"
+
+echo "*** Running demo script ***"
+cd
+wget https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/demo.py
+$SPARK_HOME/bin/spark-submit demo.py 
+
+
+echo "*** Demo processing Complete ***"
