@@ -4,13 +4,13 @@ sc = pyspark.SparkContext()
 sqlContext = aqaspark.SQLContext(sc)
 from datetime import datetime, time
 
-# rdd = sc.textFile("/Users/kristianalexander/Documents/code/spark/edgar/master.20160513.idx.txt")
-df_customer = sqlContext.read.parquet("https://aqa.blob.core.windows.net/assets/aqa/data/customer.parquet?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D")
-df_orders = sqlContext.read.parquet("https://aqa.blob.core.windows.net/assets/aqa/data/orders.parquet?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D")
-df_lineitem = sqlContext.read.parquet("https://aqa.blob.core.windows.net/assets/aqa/data/lineitem.parquet?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D")
-df_supplier = sqlContext.read.parquet("https://aqa.blob.core.windows.net/assets/aqa/data/supplier.parquet?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D")
-df_nation = sqlContext.read.parquet("https://aqa.blob.core.windows.net/assets/aqa/data/nation.parquet?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D")
-df_region = sqlContext.read.parquet("https://aqa.blob.core.windows.net/assets/aqa/data/region.parquet?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D")
+#rdd = sc.textFile("wasbs://public@aqa.blob.core.windows.net/data/test.txt")
+df_customer = sqlContext.read.parquet("/data/data/customer.parquet")
+df_orders = sqlContext.read.parquet("/data/data/orders.parquet")
+df_lineitem = sqlContext.read.parquet("/data/data/lineitem.parquet")
+df_supplier = sqlContext.read.parquet("/data/data/supplier.parquet")
+df_nation = sqlContext.read.parquet("/data/data/nation.parquet")
+df_region = sqlContext.read.parquet("/data/data/region.parquet")
 
 
 # create table from datafrom

@@ -27,6 +27,9 @@ release=mvp1.1 # Change this for each MVP release.
 base_url=https://aqa.blob.core.windows.net/assets/aqa
 url_ext="?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D"
 
+sudo rm -f ~/.bashrc
+sudo rm -f ~/.bash_profile
+
 
 
 # This is the list of wheel filenames. Each filename is composed of a package name and version
@@ -62,6 +65,8 @@ export PATH=$SPARK_HOME/bin:$PATH
 
 echo "${environ}" >> ${bash_profile}
 echo "${environ}" >> ${bashrc}
+
+
 
 # --------------------------------------------------------------------------------------------------
 echo "*** Installing Python3.4 and a development environment ***"
@@ -133,7 +138,12 @@ do
         
         sudo mv $local_wheel_filename/"$wheel_filename$url_ext" $local_wheel_filename/$wheel_filename
         
+        #sudo python3 -m pip install $local_wheel_filename/$wheel_filename
+        
+        
         sudo pip3 install $local_wheel_filename/$wheel_filename
+        
+        
         echo "   ...wheel install: $seconds elapsed"
     fi
 done
@@ -152,11 +162,14 @@ cd /mnt/aqa_root/data/
 
 sudo  wget $base_url/$config_file_src$url_ext
 
-
+export PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python3.5/dist-packages/
 
 sudo mv /mnt/aqa_root/data/"$config_file_src$url_ext" /mnt/aqa_root/data/$config_file_src
 
 sudo chmod -R 777 /mnt/aqa_root/data/
+
+. ~/.bashrc
+. ~/.bash_profile
 
 # --------------------------------------------------------------------------------------------------
 echo "*** AQA Bootstrap Complete ***"
