@@ -27,7 +27,7 @@ release=mvp1.1 # Change this for each MVP release.
 base_url=https://aqa.blob.core.windows.net/assets/aqa
 url_ext="?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D"
 
-home_dir=/home/aqa
+home_dir=/home/aqa/
 sudo rm -rf $home_dir
 sudo mkdir -p $home_dir
 
@@ -178,6 +178,9 @@ cd $home_dir
 
 source $home_dir/.bashrc
 source $home_dir/.bash_profile
+
+. $home_dir/.bashrc
+. $home_dir/.bash_profile
 
 # --------------------------------------------------------------------------------------------------
 
