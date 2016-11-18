@@ -31,6 +31,9 @@ home_dir=/home/aqa
 sudo rm -rf $home_dir
 sudo mkdir -p $home_dir
 
+sudo chmod -R 777 $home_dir
+
+
 
 
 # This is the list of wheel filenames. Each filename is composed of a package name and version
@@ -47,6 +50,8 @@ sudo rm -rf $aqa_root
 
 sudo mkdir -p /mnt/aqa_root/
 sudo mkdir -p /mnt/aqa_root/data/
+
+
 
 # --------------------------------------------------------------------------------------------------
 echo "*** Setting up the environment for user hadoop (for command line work) ***"
