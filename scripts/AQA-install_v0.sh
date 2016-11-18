@@ -16,6 +16,8 @@
 # Script configuration:
 
 
+mkdir -p /tmp/aqa
+
 # Import the helper method module.
 wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.windows.net/linuxconfigactionmodulev01/HDInsightUtilities-v01.sh && source /tmp/HDInsightUtilities-v01.sh && rm -f /tmp/HDInsightUtilities-v01.sh
 
