@@ -108,7 +108,7 @@ seconds=0
 declare -a packages=("numpy" "scipy")
 for package in "${packages[@]}"
 do
-    sudo python3-pip install $package
+    sudo pip3 install $package
     echo "   ...pip $package: $seconds elapsed"
 done
 echo "...TOTAL for pip: $seconds elapsed"
@@ -133,7 +133,7 @@ do
         
         sudo mv $local_wheel_filename/"$wheel_filename$url_ext" $local_wheel_filename/$wheel_filename
         
-        sudo python3-pip install $local_wheel_filename/$wheel_filename
+        sudo pip3 install $local_wheel_filename/$wheel_filename
         
         sudo python3 -m pip install $local_wheel_filename
         echo "   ...wheel install: $seconds elapsed"
