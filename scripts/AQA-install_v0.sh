@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # --------------------------------------------------------------------------------------------------
 # An executable script for bootstrapping EMR clusters:
 #
@@ -15,44 +15,17 @@
 # --------------------------------------------------------------------------------------------------
 # Script configuration:
 
-
-mkdir -p /tmp/aqa
-
-# Import the helper method module.
-wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.windows.net/linuxconfigactionmodulev01/HDInsightUtilities-v01.sh && source /tmp/HDInsightUtilities-v01.sh && rm -f /tmp/HDInsightUtilities-v01.sh
-
-# Check if the current  host is headnode.
-if [ 'test_is_headnode' == 0 ]; then
-  echo  "AQA only needs to be installed on headnode, exiting ..."
-  exit 0
-fi
-
-# In case AQA is installed, exit.
-if [ -e /usr/hdp/current/aqa ]; then
-    echo "AQA is already installed, exiting ..."
-    exit 0
-fi
-
+# Exit immediately if a command exits with a non-zero status.
+set -e
 
 # Set the directory path to the release location in S3. $release must be set to what follows
+# 's3://aqapop/beta/' in the full directory path (for example 'mvp1.1').
 release=mvp1.1 # Change this for each MVP release.
 
 # This is then the location on S3 where the release files are published.
 
 base_url=https://aqa.blob.core.windows.net/assets/aqa
 url_ext="?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D"
-
-
-home_dir=/usr/hdp/current/aqa
-
-data_dir=/usr/hdp/current/aqa/data
-
-sudo mkdir -p $home_dir
-sudo chmod -R 777 $home_dir
-
-sudo mkdir -p $data_dir
-sudo chmod -R 777 $data_dir
-
 
 
 
@@ -63,13 +36,20 @@ wheel_ext="-py3-none-any.whl"
 
 
 
+# The location for AQA working data.
+aqa_root=/mnt/aqa_root
+
+sudo rm -rf $aqa_root
+
+sudo mkdir -p /mnt/aqa_root/
+sudo mkdir -p /mnt/aqa_root/data/
 
 # --------------------------------------------------------------------------------------------------
 echo "*** Setting up the environment for user hadoop (for command line work) ***"
 
 # NOTE: PYSPARK_PYTHON is only needed for EMR < 4.6
-bash_profile=$home_dir/.bash_profile
-bashrc=$home_dir/.bashrc
+bash_profile=/home/sshuser/.bash_profile
+bashrc=/home/sshuser/.bashrc
 environ="
 export PYSPARK_PYTHON=/usr/bin/python3
 export PYSPARK_DRIVER_PYTHON=python3
@@ -82,8 +62,6 @@ export PATH=$SPARK_HOME/bin:$PATH
 
 echo "${environ}" >> ${bash_profile}
 echo "${environ}" >> ${bashrc}
-
-
 
 # --------------------------------------------------------------------------------------------------
 echo "*** Installing Python3.4 and a development environment ***"
@@ -130,7 +108,7 @@ seconds=0
 declare -a packages=("numpy" "scipy")
 for package in "${packages[@]}"
 do
-    sudo pip3 install $package
+    sudo python3-pip install $package
     echo "   ...pip $package: $seconds elapsed"
 done
 echo "...TOTAL for pip: $seconds elapsed"
@@ -138,9 +116,9 @@ echo "...TOTAL for pip: $seconds elapsed"
 # --------------------------------------------------------------------------------------------------
 echo "*** Installing AQA wheels ***"
 
-local_wheel_dir=$data_dir/working/wheels
+local_wheel_dir=$aqa_root/working/wheels
 sudo mkdir -p $local_wheel_dir
-sudo chmod 777 -R $data_dir
+sudo chmod 777 -R /mnt/aqa_root
 seconds=0
 for wheel_prefix in "${wheel_prefixes[@]}"
 do
@@ -155,12 +133,9 @@ do
         
         sudo mv $local_wheel_filename/"$wheel_filename$url_ext" $local_wheel_filename/$wheel_filename
         
-        #sudo python3 -m pip install $local_wheel_filename/$wheel_filename
+        sudo python3-pip install $local_wheel_filename/$wheel_filename
         
-        
-        sudo pip3 install $local_wheel_filename/$wheel_filename
-        
-        
+        sudo python3 -m pip install $local_wheel_filename
         echo "   ...wheel install: $seconds elapsed"
     fi
 done
@@ -171,28 +146,17 @@ echo "*** Copying configuration file ***"
 
 config_file_src=aqa_cfg.ini
 
+rm -rf /mnt/aqa_root/data/
 
-cd $data_dir
+sudo mkdir -p /mnt/aqa_root/data/
 
+cd /mnt/aqa_root/data/
 
 sudo  wget $base_url/$config_file_src$url_ext
 
-export PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python3.5/dist-packages/
+sudo mv $base_url/"$config_file_src$url_ext" $base_url/$config_file_src
 
-sudo mv $data_dir/"$config_file_src$url_ext" $data_dir/$config_file_src
-
-
-cd $home_dir
-
-. $home_dir/.bashrc
-. $home_dir/.bash_profile
+sudo chmod -R 777 /mnt/aqa_root/data/
 
 # --------------------------------------------------------------------------------------------------
-
-
-wget https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/demo.py
-
-#$SPARK_HOME/bin/spark-submit demo.py 
-
 echo "*** AQA Bootstrap Complete ***"
-
