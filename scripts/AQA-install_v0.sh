@@ -173,7 +173,7 @@ source /home/sshuser/.bash_profile
 
 # --------------------------------------------------------------------------------------------------
 
-cd
+
 wget https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/demo.py
 
 #$SPARK_HOME/bin/spark-submit demo.py 
