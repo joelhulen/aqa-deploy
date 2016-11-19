@@ -188,6 +188,9 @@ cd $home_dir
 . $home_dir/.bash_profile
 
 
+source .bash_profile 
+source .bashrc
+
 
 
 
