@@ -15,11 +15,21 @@
 # --------------------------------------------------------------------------------------------------
 # Script configuration:
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
+
+
+# Import the helper method module.
+wget -O /tmp/HDInsightUtilities-v01.sh -q https://hdiconfigactions.blob.core.windows.net/linuxconfigactionmodulev01/HDInsightUtilities-v01.sh && source /tmp/HDInsightUtilities-v01.sh && rm -f /tmp/HDInsightUtilities-v01.sh
+
+# In case AQA is installed, exit.
+if [ -e /usr/hdp/current/aqa ]; then
+    echo "AQA is already installed, exiting ..."
+    exit 0
+fi
+
+PRIMARYHEADNODE='get_primary_headnode'
+
 
 # Set the directory path to the release location in S3. $release must be set to what follows
-# 's3://aqapop/beta/' in the full directory path (for example 'mvp1.1').
 release=mvp1.1 # Change this for each MVP release.
 
 # This is then the location on S3 where the release files are published.
@@ -27,11 +37,16 @@ release=mvp1.1 # Change this for each MVP release.
 base_url=https://aqa.blob.core.windows.net/assets/aqa
 url_ext="?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D"
 
-home_dir=/home/aqa/
-sudo rm -rf $home_dir
-sudo mkdir -p $home_dir
 
+home_dir=/usr/hdp/current/aqa
+
+data_dir=$home_dir/data
+
+sudo mkdir -p $home_dir
 sudo chmod -R 777 $home_dir
+
+sudo mkdir -p $data_dir
+sudo chmod -R 777 $data_dir
 
 
 
@@ -41,15 +56,6 @@ sudo chmod -R 777 $home_dir
 declare -a wheel_prefixes=("algebraixlib-1.4b1" "aqashared-0.1.1" "aqaspark-0.1.1" "aqacfs-0.1.1" "aqaopt-0.1.1" "internal-1.1.1" "experimental-1.1.1")
 wheel_ext="-py3-none-any.whl"
 
-
-
-# The location for AQA working data.
-aqa_root=/mnt/aqa_root
-
-sudo rm -rf $aqa_root
-
-sudo mkdir -p /mnt/aqa_root/
-sudo mkdir -p /mnt/aqa_root/data/
 
 
 
@@ -127,9 +133,9 @@ echo "...TOTAL for pip: $seconds elapsed"
 # --------------------------------------------------------------------------------------------------
 echo "*** Installing AQA wheels ***"
 
-local_wheel_dir=$aqa_root/working/wheels
+local_wheel_dir=$data_dir/working/wheels
 sudo mkdir -p $local_wheel_dir
-sudo chmod 777 -R /mnt/aqa_root
+sudo chmod 777 -R $data_dir
 seconds=0
 for wheel_prefix in "${wheel_prefixes[@]}"
 do
@@ -160,30 +166,28 @@ echo "*** Copying configuration file ***"
 
 config_file_src=aqa_cfg.ini
 
-rm -rf /mnt/aqa_root/data/
 
-sudo mkdir -p /mnt/aqa_root/data/
+cd $data_dir
 
-cd /mnt/aqa_root/data/
 
 sudo  wget $base_url/$config_file_src$url_ext
 
 export PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python3.5/dist-packages/
 
-sudo mv /mnt/aqa_root/data/"$config_file_src$url_ext" /mnt/aqa_root/data/$config_file_src
+sudo mv $data_dir/"$config_file_src$url_ext" $data_dir/$config_file_src
 
-sudo chmod -R 777 /mnt/aqa_root/data/
 
 cd $home_dir
-
 
 . $home_dir/.bashrc
 . $home_dir/.bash_profile
 
+exec bash
+
 # --------------------------------------------------------------------------------------------------
 
 
-#wget https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/demo.py
+wget https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/demo.py
 
 #$SPARK_HOME/bin/spark-submit demo.py 
 
