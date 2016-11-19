@@ -167,14 +167,19 @@ echo "*** Copying configuration file ***"
 config_file_src=aqa_cfg.ini
 
 
-cd $data_dir
+rm -rf /mnt/aqa_root/data/
 
+sudo mkdir -p /mnt/aqa_root/data/
+
+cd /mnt/aqa_root/data/
 
 sudo  wget $base_url/$config_file_src$url_ext
 
 export PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python3.5/dist-packages/
 
-sudo mv $data_dir/"$config_file_src$url_ext" $data_dir/$config_file_src
+sudo mv /mnt/aqa_root/data/"$config_file_src$url_ext" /mnt/aqa_root/data/$config_file_src
+
+sudo chmod -R 777 /mnt/aqa_root/data/
 
 
 cd $home_dir
@@ -182,7 +187,9 @@ cd $home_dir
 . $home_dir/.bashrc
 . $home_dir/.bash_profile
 
-exec bash
+
+
+
 
 # --------------------------------------------------------------------------------------------------
 
