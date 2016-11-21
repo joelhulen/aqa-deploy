@@ -14,20 +14,6 @@
                 "description" : "The Algebraix Query Accelerator (AQA) is a software component for Spark SQL designed to help big data engineers and business users unlock the value of their data without the frustrations of adding hardware, manually tuning queries, and creating adjacent data stores.."
             },
             "defaultValue": "Algebraix Query Accelerator"
-        },
-        "edgeNodeSize": {
-            "type": "string",
-            "metadata": {
-                "description": "Size of the edge node that hosts the application"
-            },
-            "defaultValue": "Standard_D3_v2",
-            "allowedValues": [
-              "Standard_D3_v2",
-              "Standard_D4_v2",
-              "Standard_D12_v2",
-              "Standard_D13_v2",
-              "Standard_D14_v2"
-            ]
         }
     },
     "variables": {
@@ -42,17 +28,13 @@
             "marketPlaceIdentifier": "[parameters('galleryPackageIdentity')]",
             "computeProfile": {
                 "roles": [{
-                    "name": "edgenode",
-                    "targetInstanceCount": 1,
-                    "hardwareProfile": {
-                        "vmSize": "[parameters('edgeNodeSize')]"
-                    }
+                    "name": "headnode"
                 }]
             },
             "installScriptActions": [{
                 "name": "[concat('aqa-install-v0','-' ,uniquestring(variables('applicationName')))]",
                 "uri": "https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/scripts/AQA-install_v0.sh",
-                "roles": ["edgenode"]
+                "roles": ["headnode"]
             }],
             "uninstallScriptActions": [],
             "httpsEndpoints": [{
