@@ -206,6 +206,17 @@
       "apiVersion": "[variables('clusterApiVersion')]",
       "dependsOn": [ "[parameters('clusterName')]" ],
       "properties": {
+        "computeProfile": {
+          "roles": [
+            {
+              "name": "headnode",
+              "targetInstanceCount": "2",
+              "hardwareProfile": {
+                "vmSize": "[parameters('clusterHeadNodeSize')]"
+              }
+            }
+          ]
+        },
         "installScriptActions": [
           {
             "name": "[concat('aqa-install-v0','-' ,uniquestring(variables('applicationName')))]",
