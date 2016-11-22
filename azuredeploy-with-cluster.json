@@ -235,7 +235,7 @@
           {
             "name": "[concat('aqa-install-v0','-' ,uniquestring(variables('applicationName')))]",
             "uri": "https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/scripts/AQA-install_v0.sh",
-            "roles": [ "headnode" ],
+            "roles": [ "headnode", "edgenode" ],
             "parameters": "[parameters('clusterName')]"
           }
         ],
