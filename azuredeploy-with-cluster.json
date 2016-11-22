@@ -115,6 +115,20 @@
           "Standard_D13_v2",
           "Standard_D14_v2"
       ]
+    },
+    "edgeNodeSize": {
+      "type": "string",
+      "metadata": {
+          "description": "Size of the edge node that hosts the AQA application"
+      },
+      "defaultValue": "Standard_D12_v2",
+      "allowedValues": [
+          "Standard_D3_v2",
+          "Standard_D4_v2",
+          "Standard_D12_v2",
+          "Standard_D13_v2",
+          "Standard_D14_v2"
+      ]
     }
   },
   "variables": {
@@ -209,10 +223,10 @@
         "computeProfile": {
           "roles": [
             {
-              "name": "headnode",
-              "targetInstanceCount": "2",
+              "name": "edgenode",
+              "targetInstanceCount": 1,
               "hardwareProfile": {
-                "vmSize": "[parameters('clusterHeadNodeSize')]"
+                "vmSize": "[parameters('edgeNodeSize')]"
               }
             }
           ]
