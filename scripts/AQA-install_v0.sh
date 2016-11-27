@@ -188,8 +188,8 @@ cd $home_dir
 . $home_dir/.bash_profile
 
 
-source .bash_profile 
-source .bashrc
+source $home_dir/.bash_profile 
+source $home_dir/.bashrc
 
 
 
@@ -198,6 +198,10 @@ source .bashrc
 
 
 wget https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/demo.py
+
+wget https://raw.githubusercontent.com/joelhulen/aqa-deploy/master/run_demo.sh
+
+sudo chmod 777 ./run_demo.sh
 
 #$SPARK_HOME/bin/spark-submit demo.py 
 
