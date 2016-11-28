@@ -15,6 +15,4 @@
    
 1. Establish a new SSH session to your new cluster.
 2. Change directory to /usr/hdp/current/aqa (`cd /usr/hdp/current/aqa`)
-3. `source .bash_profile` 
-4. `source .bashrc`
-5. Run the benchmark demo with `spark-submit demo.py`
+3. Run the benchmark demo script (./run_demo.sh)
