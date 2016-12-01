@@ -35,7 +35,7 @@ release=mvp1.1 # Change this for each MVP release.
 # This is then the location on S3 where the release files are published.
 
 base_url=https://aqa.blob.core.windows.net/assets/aqa
-url_ext="?sv=2015-04-05&ss=bf&srt=sco&sp=rwdlac&se=2017-11-12T04:21:09Z&st=2016-11-11T20:21:09Z&spr=https&sig=ydRyrnt9DDc9XaRpF2J8Bv%2BO3rCqpZsWLjZxdBSlqrE%3D"
+url_ext="?sv=2015-04-05&ss=b&srt=co&sp=r&se=2017-12-01T12:01:17Z&st=2016-12-01T04:01:17Z&spr=https,http&sig=4X8uEcvZOdEAdv%2B64QxQQAfpRNL4jJijkOe1FbMuOTo%3D"
 
 
 home_dir=/usr/hdp/current/aqa
